@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Builder - GlobalCV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        'primary-dark': '#059669',
+                        'primary-light': '#34d399',
+                        accent: '#14b8a6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Crimson+Pro:wght@600;700&display=swap');
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active {
+            background: linear-gradient(135deg, #10b981, #14b8a6);
+            color: white;
+        }
+
+        .step-indicator.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cv-preview {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-height: 600px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .input-field {
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        .photo-placeholder {
+            width: 120px;
+            height: 150px;
+            border: 2px dashed #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            color: #9ca3af;
+            font-size: 10px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #cv-preview-content, #cv-preview-content * {
+                visibility: visible;
+            }
+            #cv-preview-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+                        <rect width="36" height="36" rx="8" fill="#10b981"/>
+                        <path d="M12 18L16 22L24 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="text-xl font-bold text-gray-900">GlobalCV Builder</span>
+                </div>
+                <button onclick="window.location.href='globalcv-site.html'" class="text-gray-600 hover:text-primary transition-colors">
+                    ← Back to Home
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Progress Steps -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center gap-4">
+                <div class="flex flex-col items-center">
+                    <div class="step-indicator active flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 font-semibold" data-step="1">1</div>
+                    <span class="step-label font-medium text-primary text-center text-xs mt-2" data-label="1">Country</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-200 mb-6"></div>
+                <div class="flex flex-col items-center">
+                    <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 font-semibold" data-step="2">2</div>
+                    <span class="step-label text-center text-xs mt-2" data-label="2">Personal</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-200 mb-6"></div>
+                <div class="flex flex-col items-center">
+                    <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 font-semibold" data-step="3">3</div>
+                    <span class="step-label text-center text-xs mt-2" data-label="3">Experience</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-200 mb-6"></div>
+                <div class="flex flex-col items-center">
+                    <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 font-semibold" data-step="4">4</div>
+                    <span class="step-label text-center text-xs mt-2" data-label="4">Education</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-200 mb-6"></div>
+                <div class="flex flex-col items-center">
+                    <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 font-semibold" data-step="5">5</div>
+                    <span class="step-label text-center text-xs mt-2" data-label="5">Skills</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-200 mb-6"></div>
+                <div class="flex flex-col items-center">
+                    <div class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 font-semibold" data-step="6">6</div>
+                    <span class="step-label text-center text-xs mt-2" data-label="6">Additional</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            
+            <!-- Form Section -->
+            <div class="bg-white rounded-xl shadow-lg p-8 h-fit">
+                
+                <!-- Step 1: Country Selection -->
+                <div id="step-1" class="form-section active">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Select Your Target Country</h2>
+                    <p class="text-gray-600 mb-8">We'll customize your CV format based on local standards and expectations.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Country *</label>
+                            <select id="country" onchange="updateCountryGuidance()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select a country...</option>
+                                <option value="US">United States</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="CA">Canada</option>
+                                <option value="AU">Australia</option>
+                                <option value="DE">Germany</option>
+                                <option value="FR">France</option>
+                                <option value="ES">Spain</option>
+                                <option value="IT">Italy</option>
+                                <option value="NL">Netherlands</option>
+                                <option value="BE">Belgium</option>
+                                <option value="CH">Switzerland</option>
+                                <option value="AT">Austria</option>
+                                <option value="SE">Sweden</option>
+                                <option value="NO">Norway</option>
+                                <option value="DK">Denmark</option>
+                                <option value="FI">Finland</option>
+                                <option value="IE">Ireland</option>
+                                <option value="SG">Singapore</option>
+                                <option value="JP">Japan</option>
+                                <option value="KR">South Korea</option>
+                                <option value="CN">China</option>
+                                <option value="HK">Hong Kong</option>
+                                <option value="IN">India</option>
+                                <option value="AE">UAE</option>
+                                <option value="BR">Brazil</option>
+                                <option value="MX">Mexico</option>
+                                <option value="AR">Argentina</option>
+                                <option value="CL">Chile</option>
+                                <option value="NZ">New Zealand</option>
+                                <option value="ZA">South Africa</option>
+                                <option value="TH">Thailand</option>
+                                <option value="VN">Vietnam</option>
+                                <option value="PH">Philippines</option>
+                                <option value="PT">Portugal</option>
+                                <option value="RU">Russia</option>
+                            </select>
+                        </div>
+
+                        <div id="country-info" class="hidden mt-6 p-6 bg-primary/5 rounded-lg border border-primary/20">
+                            <h4 class="font-semibold text-gray-900 mb-3">📋 CV Guidelines for <span id="country-name"></span></h4>
+                            <ul class="space-y-2 text-sm text-gray-700" id="country-guidelines">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button onclick="nextStep()" class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Personal Information -->
+                <div id="step-2" class="form-section">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Personal Information</h2>
+                    <p class="text-gray-600 mb-8">Let's start with your basic details.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
+                                <input type="text" id="firstName" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="John">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
+                                <input type="text" id="lastName" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Doe">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Professional Title *</label>
+                            <input type="text" id="title" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., Software Engineer, Marketing Manager">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                                <input type="email" id="email" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="john@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
+                                <input type="tel" id="phone" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="+1 234 567 8900">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Location (City, Country) *</label>
+                            <input type="text" id="location" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="New York, USA">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">LinkedIn URL</label>
+                            <input type="url" id="linkedin" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="https://linkedin.com/in/johndoe">
+                        </div>
+
+                        <!-- Country-specific fields -->
+                        <div id="date-of-birth-field" class="hidden">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth <span id="dob-required"></span></label>
+                            <input type="date" id="dateOfBirth" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Required for <span id="dob-countries"></span></p>
+                        </div>
+
+                        <div id="nationality-field" class="hidden">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nationality <span id="nationality-required"></span></label>
+                            <input type="text" id="nationality" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., American, British">
+                            <p class="text-xs text-gray-500 mt-1">Expected in <span id="nationality-countries"></span></p>
+                        </div>
+
+                        <div id="marital-status-field" class="hidden">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Marital Status (Optional)</label>
+                            <select id="maritalStatus" oninput="updatePreview()" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Prefer not to say</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">Optional for <span id="marital-countries"></span></p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Professional Summary *</label>
+                            <textarea id="summary" oninput="updatePreview()" rows="4" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="A brief overview of your professional background, key skills, and career objectives..."></textarea>
+                            <p class="text-xs text-gray-500 mt-1">4-6 sentences recommended</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-between">
+                        <button onclick="previousStep()" class="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                            ← Back
+                        </button>
+                        <button onclick="nextStep()" class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Work Experience -->
+                <div id="step-3" class="form-section">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Work Experience</h2>
+                    <p class="text-gray-600 mb-8">Add your professional experience (most recent first).</p>
+                    
+                    <div id="experience-container" class="space-y-6">
+                        <!-- Experience items will be added here -->
+                    </div>
+
+                    <button onclick="addExperience()" class="mt-4 px-6 py-2 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition-all">
+                        + Add Experience
+                    </button>
+
+                    <div class="mt-8 flex justify-between">
+                        <button onclick="previousStep()" class="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                            ← Back
+                        </button>
+                        <button onclick="nextStep()" class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Education -->
+                <div id="step-4" class="form-section">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Education</h2>
+                    <p class="text-gray-600 mb-8">Add your educational background (most recent first).</p>
+                    
+                    <div id="education-container" class="space-y-6">
+                        <!-- Education items will be added here -->
+                    </div>
+
+                    <button onclick="addEducation()" class="mt-4 px-6 py-2 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition-all">
+                        + Add Education
+                    </button>
+
+                    <div class="mt-8 flex justify-between">
+                        <button onclick="previousStep()" class="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                            ← Back
+                        </button>
+                        <button onclick="nextStep()" class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Skills & Languages -->
+                <div id="step-5" class="form-section">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Skills & Languages</h2>
+                    <p class="text-gray-600 mb-8">Highlight your professional skills and language abilities.</p>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Skills *</label>
+                            <textarea id="skills" oninput="updatePreview()" rows="3" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., Project Management, Python, Data Analysis, Marketing Strategy (separate with commas)"></textarea>
+                            <p class="text-xs text-gray-500 mt-1">List your key professional skills, separated by commas</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Languages</label>
+                            <div id="languages-container" class="space-y-4">
+                                <!-- Language entries will be added here -->
+                            </div>
+                            <button onclick="addLanguage()" class="mt-4 px-6 py-2 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition-all">
+                                + Add Language
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Certifications (Optional)</label>
+                            <textarea id="certifications" oninput="updatePreview()" rows="3" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., PMP Certification, AWS Certified Solutions Architect (one per line)"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-between">
+                        <button onclick="previousStep()" class="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                            ← Back
+                        </button>
+                        <button onclick="nextStep()" class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 6: Additional Information -->
+                <div id="step-6" class="form-section">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Additional Information</h2>
+                    <p class="text-gray-600 mb-8">Optional sections that may enhance your CV based on the country.</p>
+                    
+                    <div class="space-y-6">
+                        <div id="hobbies-section" class="hidden">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Hobbies & Interests (Optional)</label>
+                            <textarea id="hobbies" oninput="updatePreview()" rows="2" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g., Photography, Hiking, Volunteering"></textarea>
+                            <p class="text-xs text-gray-500 mt-1">Common in European CVs to show personality and cultural fit</p>
+                        </div>
+
+                        <div id="references-section">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">References</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3">
+                                    <input type="radio" name="references" value="upon-request" checked onchange="updatePreview()" class="w-4 h-4 text-primary">
+                                    <span class="text-gray-700">References available upon request</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="radio" name="references" value="provide" onchange="toggleReferencesInput()" class="w-4 h-4 text-primary">
+                                    <span class="text-gray-700">Provide references now</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="radio" name="references" value="none" onchange="updatePreview()" class="w-4 h-4 text-primary">
+                                    <span class="text-gray-700">Don't include references section</span>
+                                </label>
+                            </div>
+                            <div id="references-input" class="hidden mt-4">
+                                <textarea id="referencesText" oninput="updatePreview()" rows="4" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Enter reference details (Name, Title, Company, Email, Phone)"></textarea>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2" id="references-guidance"></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-between">
+                        <button onclick="previousStep()" class="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                            ← Back
+                        </button>
+                        <button onclick="downloadCV()" class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                            Download CV (PDF) →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="sticky top-8">
+                <div class="bg-white rounded-xl shadow-lg p-4">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Live Preview</h3>
+                    <div class="cv-preview bg-white p-8 border border-gray-200 rounded-lg overflow-auto max-h-[800px]" id="cv-preview-content">
+                        <!-- CV Preview will be rendered here -->
+                        <div class="text-center text-gray-400 py-20">
+                            <p>Your CV preview will appear here</p>
+                            <p class="text-sm mt-2">Select a country to begin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Country-specific formatting rules
+        const countryRules = {
+            'US': {
+                name: 'United States',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'MM/DD/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Typically omitted; only provide if specifically requested',
+                hobbies: false,
+                guidelines: [
+                    'Keep to 1-2 pages maximum',
+                    'No photo, age, marital status, or nationality (anti-discrimination laws)',
+                    'List work experience before education',
+                    'Use reverse-chronological format',
+                    'Omit references section (assumed available)',
+                    'Focus on achievements with quantifiable results'
+                ]
+            },
+            'UK': {
+                name: 'United Kingdom',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include "References available upon request" at the end',
+                hobbies: true,
+                guidelines: [
+                    'Standard length is 2 pages',
+                    'No photo or personal details (age, marital status)',
+                    'Include a Personal Statement (4-6 sentences)',
+                    'Add "References available upon request"',
+                    'Use British English spelling',
+                    'Hobbies/interests section is optional but common'
+                ]
+            },
+            'CA': {
+                name: 'Canada',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'MM/DD/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Usually omitted',
+                hobbies: false,
+                guidelines: [
+                    'Similar to US format: 1-2 pages',
+                    'No photo or personal information',
+                    'List experience before education',
+                    'Bilingual skills (English/French) highly valued',
+                    'Include volunteer experience if relevant'
+                ]
+            },
+            'AU': {
+                name: 'Australia',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '2-3 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include "References available upon request"',
+                hobbies: true,
+                guidelines: [
+                    'Length: 2-3 pages acceptable',
+                    'No photo or personal details',
+                    'Include references section',
+                    'Career summary at the top',
+                    'Hobbies/interests section is common'
+                ]
+            },
+            'DE': {
+                name: 'Germany',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '2-3 pages',
+                dateFormat: 'DD.MM.YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Include references or state available upon request',
+                hobbies: true,
+                guidelines: [
+                    'Photo is REQUIRED (professional passport-style)',
+                    'Include date of birth and nationality',
+                    'List education before work experience',
+                    'Length: 2-3 pages with detailed information',
+                    'Marital status and number of children often included',
+                    'Attach copies of certificates and diplomas',
+                    'Highly structured and formal format'
+                ]
+            },
+            'FR': {
+                name: 'France',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Optional, more common to omit',
+                hobbies: true,
+                guidelines: [
+                    'Photo is expected (professional headshot)',
+                    'Include age, address, marital status',
+                    'Length: 1-2 pages, concise',
+                    'Education listed before experience',
+                    'More personal tone acceptable',
+                    'Hobbies/interests section recommended'
+                ]
+            },
+            'ES': {
+                name: 'Spain',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Usually omitted',
+                hobbies: true,
+                guidelines: [
+                    'Photo expected',
+                    'Include date of birth and nationality',
+                    'Length: 1-2 pages',
+                    'Europass CV format is popular',
+                    'List languages with CEFR proficiency levels'
+                ]
+            },
+            'IT': {
+                name: 'Italy',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Usually omitted',
+                hobbies: true,
+                guidelines: [
+                    'Photo is customary',
+                    'Include personal details (age, nationality)',
+                    'Europass format commonly used',
+                    'Language skills with proficiency levels',
+                    'Driving license often mentioned'
+                ]
+            },
+            'NL': {
+                name: 'Netherlands',
+                photo: true,
+                dateOfBirth: true,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD-MM-YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Usually included',
+                hobbies: true,
+                guidelines: [
+                    'Photo optional but increasingly common',
+                    'Include date of birth',
+                    'Length: 1-2 pages, concise',
+                    'Direct and factual tone',
+                    'Language proficiency is important'
+                ]
+            },
+            'CH': {
+                name: 'Switzerland',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '2 pages',
+                dateFormat: 'DD.MM.YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo required (professional)',
+                    'Include full personal details',
+                    'Similar to German format - very formal',
+                    'List languages spoken (important in multilingual country)',
+                    'References expected'
+                ]
+            },
+            'SE': {
+                name: 'Sweden',
+                photo: false,
+                dateOfBirth: true,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'YYYY-MM-DD',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photos becoming less common',
+                    'Date of birth may be included',
+                    'Brief and concise (1-2 pages)',
+                    'Personal letter (cover letter) highly important',
+                    'Include references'
+                ]
+            },
+            'NO': {
+                name: 'Norway',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD.MM.YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo not required',
+                    'Keep to 1-2 pages',
+                    'Straightforward, factual approach',
+                    'Include 2-3 references with contact details',
+                    'Hobbies section common'
+                ]
+            },
+            'DK': {
+                name: 'Denmark',
+                photo: false,
+                dateOfBirth: true,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD-MM-YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo optional (becoming less common)',
+                    'Concise: 1-2 pages',
+                    'Include references',
+                    'Informal, direct tone acceptable',
+                    'Cover letter extremely important'
+                ]
+            },
+            'FI': {
+                name: 'Finland',
+                photo: false,
+                dateOfBirth: true,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD.MM.YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo not required',
+                    'Brief: 1-2 pages',
+                    'Include date of birth',
+                    'List 2-3 references',
+                    'Modest tone (avoid over-selling)'
+                ]
+            },
+            'JP': {
+                name: 'Japan',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'YYYY/MM/DD',
+                sectionOrder: ['education', 'experience'],
+                references: 'Not typically included',
+                hobbies: true,
+                guidelines: [
+                    'Photo is REQUIRED (formal, professional)',
+                    'Use rirekisho format (standardized form)',
+                    'Include all personal details: age, gender, address',
+                    'Marital status and dependents required',
+                    'Chronological order (oldest first, not reverse)',
+                    'Education before experience',
+                    'Handwritten CVs may be preferred for traditional companies'
+                ]
+            },
+            'KR': {
+                name: 'South Korea',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'YYYY/MM/DD',
+                sectionOrder: ['education', 'experience'],
+                references: 'Not typically included',
+                hobbies: true,
+                guidelines: [
+                    'Photo required',
+                    'Include detailed personal information',
+                    'Family background often included',
+                    'Military service status (for men)',
+                    'Education before experience',
+                    'Chronological format'
+                ]
+            },
+            'CN': {
+                name: 'China',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'YYYY/MM/DD',
+                sectionOrder: ['education', 'experience'],
+                references: 'Usually not included',
+                hobbies: true,
+                guidelines: [
+                    'Photo is customary',
+                    'Include age, gender, marital status',
+                    'Hukou (household registration) may be relevant',
+                    'Political affiliation sometimes mentioned',
+                    'Can be in Chinese or English depending on company'
+                ]
+            },
+            'HK': {
+                name: 'Hong Kong',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include "References available upon request"',
+                hobbies: true,
+                guidelines: [
+                    'Photo expected',
+                    'Include date of birth and nationality',
+                    'Bilingual (English/Chinese) skills highly valued',
+                    'Concise format',
+                    'References section included'
+                ]
+            },
+            'SG': {
+                name: 'Singapore',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references or "available upon request"',
+                hobbies: false,
+                guidelines: [
+                    'Photo commonly included',
+                    'Include date of birth, nationality',
+                    'Race/ethnicity may be included',
+                    'Concise: 1-2 pages',
+                    'Multilingual abilities are valuable'
+                ]
+            },
+            'IN': {
+                name: 'India',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo is appropriate',
+                    'Include personal details (DOB, marital status)',
+                    'Father\'s name sometimes included',
+                    'Languages spoken with proficiency',
+                    'References commonly included',
+                    'Slightly longer CVs accepted'
+                ]
+            },
+            'AE': {
+                name: 'UAE',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include "References available upon request"',
+                hobbies: false,
+                guidelines: [
+                    'Photo required',
+                    'Include comprehensive personal information',
+                    'Nationality very important',
+                    'Visa status/availability to relocate',
+                    'Language skills essential',
+                    'References section expected'
+                ]
+            },
+            'BR': {
+                name: 'Brazil',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Optional',
+                hobbies: true,
+                guidelines: [
+                    'Photo is standard',
+                    'Include personal details',
+                    'Can mention religion (optional)',
+                    'More informal tone acceptable',
+                    'Portuguese language required'
+                ]
+            },
+            'MX': {
+                name: 'Mexico',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo expected',
+                    'Include age and nationality',
+                    'Bilingual (Spanish/English) highly valued',
+                    'References commonly included',
+                    'Slightly informal tone acceptable'
+                ]
+            },
+            'AR': {
+                name: 'Argentina',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Optional',
+                hobbies: true,
+                guidelines: [
+                    'Photo is standard',
+                    'Include date of birth',
+                    'National ID number (DNI) sometimes included',
+                    'Spanish language required',
+                    'More conversational tone acceptable'
+                ]
+            },
+            'CL': {
+                name: 'Chile',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo expected',
+                    'Include personal information',
+                    'RUT (Chilean ID) for local positions',
+                    'Concise format preferred',
+                    'References section common'
+                ]
+            },
+            'NZ': {
+                name: 'New Zealand',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '2-3 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references with contact details',
+                hobbies: true,
+                guidelines: [
+                    'No photo required',
+                    'Don\'t include personal information',
+                    'Include 2-3 references with full contact details',
+                    'Can be 2-3 pages',
+                    'Career summary important',
+                    'Achievements over duties'
+                ]
+            },
+            'ZA': {
+                name: 'South Africa',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo not required',
+                    'Don\'t include race, age, gender',
+                    'References commonly included',
+                    'Driver\'s license often mentioned',
+                    'Include languages spoken'
+                ]
+            },
+            'TH': {
+                name: 'Thailand',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo required (professional)',
+                    'Include all personal details',
+                    'Education before experience',
+                    'Religion sometimes included',
+                    'References expected'
+                ]
+            },
+            'VN': {
+                name: 'Vietnam',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo required',
+                    'Include comprehensive personal information',
+                    'Place of birth often included',
+                    'Education before experience',
+                    'References section expected'
+                ]
+            },
+            'PH': {
+                name: 'Philippines',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'MM/DD/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Photo expected',
+                    'Include age, civil status',
+                    'Religion sometimes included',
+                    'English proficiency important',
+                    'Character references common'
+                ]
+            },
+            'PT': {
+                name: 'Portugal',
+                photo: true,
+                dateOfBirth: true,
+                nationality: false,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Usually omitted',
+                hobbies: true,
+                guidelines: [
+                    'Photo common',
+                    'Europass format popular',
+                    'Education before experience',
+                    'Language skills with CEFR levels',
+                    'Driving license often mentioned'
+                ]
+            },
+            'IE': {
+                name: 'Ireland',
+                photo: false,
+                dateOfBirth: false,
+                nationality: false,
+                maritalStatus: false,
+                length: '2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['experience', 'education'],
+                references: 'Include "References available upon request"',
+                hobbies: true,
+                guidelines: [
+                    'Similar to UK format',
+                    'No photo or personal details',
+                    '2 pages standard',
+                    'Include references section',
+                    'Personal profile at the top'
+                ]
+            },
+            'BE': {
+                name: 'Belgium',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: false,
+                length: '1-2 pages',
+                dateFormat: 'DD/MM/YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Optional',
+                hobbies: true,
+                guidelines: [
+                    'Photo expected',
+                    'Include date of birth, nationality',
+                    'Language skills crucial (Dutch/French/English)',
+                    'Europass format acceptable',
+                    'Education before experience'
+                ]
+            },
+            'AT': {
+                name: 'Austria',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '2-3 pages',
+                dateFormat: 'DD.MM.YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Include references',
+                hobbies: true,
+                guidelines: [
+                    'Similar to German format',
+                    'Photo required',
+                    'Include comprehensive personal details',
+                    'Very formal and structured',
+                    'Attach certificates'
+                ]
+            },
+            'RU': {
+                name: 'Russia',
+                photo: true,
+                dateOfBirth: true,
+                nationality: true,
+                maritalStatus: true,
+                length: '1-2 pages',
+                dateFormat: 'DD.MM.YYYY',
+                sectionOrder: ['education', 'experience'],
+                references: 'Optional',
+                hobbies: true,
+                guidelines: [
+                    'Photo commonly included',
+                    'Include date of birth, marital status',
+                    'Registration address (propiska) may be relevant',
+                    'Education before experience',
+                    'Can be in Russian or English'
+                ]
+            }
+        };
+
+        let currentStep = 1;
+        let experienceCount = 0;
+        let educationCount = 0;
+        let languageCount = 0;
+
+        function updateCountryGuidance() {
+            const countryCode = document.getElementById('country').value;
+            const countryInfo = document.getElementById('country-info');
+            const countryName = document.getElementById('country-name');
+            const guidelines = document.getElementById('country-guidelines');
+            
+            if (countryCode && countryRules[countryCode]) {
+                const rules = countryRules[countryCode];
+                countryInfo.classList.remove('hidden');
+                countryName.textContent = rules.name;
+                
+                guidelines.innerHTML = rules.guidelines.map(g => 
+                    `<li class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        ${g}
+                    </li>`
+                ).join('');
+                
+                // Update field visibility based on country
+                updateFieldVisibility(rules);
+                updatePreview();
+            } else {
+                countryInfo.classList.add('hidden');
+            }
+        }
+
+        function updateFieldVisibility(rules) {
+            // Date of Birth
+            const dobField = document.getElementById('date-of-birth-field');
+            if (rules.dateOfBirth) {
+                dobField.classList.remove('hidden');
+                document.getElementById('dob-required').textContent = '*';
+                document.getElementById('dob-countries').textContent = rules.name;
+            } else {
+                dobField.classList.add('hidden');
+            }
+            
+            // Nationality
+            const natField = document.getElementById('nationality-field');
+            if (rules.nationality) {
+                natField.classList.remove('hidden');
+                document.getElementById('nationality-required').textContent = '*';
+                document.getElementById('nationality-countries').textContent = rules.name;
+            } else {
+                natField.classList.add('hidden');
+            }
+            
+            // Marital Status
+            const maritalField = document.getElementById('marital-status-field');
+            if (rules.maritalStatus) {
+                maritalField.classList.remove('hidden');
+                document.getElementById('marital-countries').textContent = rules.name;
+            } else {
+                maritalField.classList.add('hidden');
+            }
+            
+            // Hobbies
+            const hobbiesSection = document.getElementById('hobbies-section');
+            if (rules.hobbies) {
+                hobbiesSection.classList.remove('hidden');
+            } else {
+                hobbiesSection.classList.add('hidden');
+            }
+            
+            // References guidance
+            document.getElementById('references-guidance').textContent = rules.references;
+        }
+
+        function nextStep() {
+            const country = document.getElementById('country').value;
+            if (currentStep === 1 && !country) {
+                alert('Please select a country first');
+                return;
+            }
+            
+            if (currentStep < 6) {
+                // Hide current step
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('completed');
+                document.querySelector(`[data-label="${currentStep}"]`).classList.remove('text-primary');
+                
+                // Show next step
+                currentStep++;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+                document.querySelector(`[data-label="${currentStep}"]`).classList.add('text-primary', 'font-medium');
+                
+                // Auto-add first items if none exist
+                if (currentStep === 3 && experienceCount === 0) addExperience();
+                if (currentStep === 4 && educationCount === 0) addEducation();
+                if (currentStep === 5 && languageCount === 0) addLanguage();
+                
+                updatePreview();
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                // Hide current step
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                document.querySelector(`[data-label="${currentStep}"]`).classList.remove('text-primary', 'font-medium');
+                
+                // Show previous step
+                currentStep--;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('completed');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+                document.querySelector(`[data-label="${currentStep}"]`).classList.add('text-primary', 'font-medium');
+                
+                updatePreview();
+            }
+        }
+
+        function addExperience() {
+            experienceCount++;
+            const container = document.getElementById('experience-container');
+            const expDiv = document.createElement('div');
+            expDiv.className = 'p-6 bg-gray-50 rounded-lg border border-gray-200';
+            expDiv.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h4 class="font-semibold text-gray-900">Experience #${experienceCount}</h4>
+                    <button onclick="this.parentElement.parentElement.remove(); updatePreview()" class="text-red-500 hover:text-red-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Job Title *</label>
+                        <input type="text" class="exp-title input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="e.g., Senior Marketing Manager" oninput="updatePreview()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Company *</label>
+                        <input type="text" class="exp-company input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="e.g., Tech Corp Inc." oninput="updatePreview()">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Start Date *</label>
+                            <input type="month" class="exp-start input-field w-full px-4 py-3 border border-gray-300 rounded-lg" oninput="updatePreview()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
+                            <input type="month" class="exp-end input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Leave blank if current" oninput="updatePreview()">
+                            <label class="flex items-center mt-2">
+                                <input type="checkbox" class="exp-current mr-2" onchange="if(this.checked) this.parentElement.previousElementSibling.value=''; updatePreview()">
+                                <span class="text-sm text-gray-600">Currently working here</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                        <textarea class="exp-description input-field w-full px-4 py-3 border border-gray-300 rounded-lg" rows="3" placeholder="Describe your responsibilities and achievements..." oninput="updatePreview()"></textarea>
+                    </div>
+                </div>
+            `;
+            container.appendChild(expDiv);
+            updatePreview();
+        }
+
+        function addEducation() {
+            educationCount++;
+            const container = document.getElementById('education-container');
+            const eduDiv = document.createElement('div');
+            eduDiv.className = 'p-6 bg-gray-50 rounded-lg border border-gray-200';
+            eduDiv.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h4 class="font-semibold text-gray-900">Education #${educationCount}</h4>
+                    <button onclick="this.parentElement.parentElement.remove(); updatePreview()" class="text-red-500 hover:text-red-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Degree *</label>
+                        <input type="text" class="edu-degree input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="e.g., Bachelor of Science in Computer Science" oninput="updatePreview()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Institution *</label>
+                        <input type="text" class="edu-institution input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="e.g., University of California, Berkeley" oninput="updatePreview()">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Start Year *</label>
+                            <input type="number" class="edu-start input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="2015" min="1950" max="2030" oninput="updatePreview()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">End Year *</label>
+                            <input type="number" class="edu-end input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="2019" min="1950" max="2030" oninput="updatePreview()">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Additional Details (Optional)</label>
+                        <textarea class="edu-details input-field w-full px-4 py-3 border border-gray-300 rounded-lg" rows="2" placeholder="e.g., GPA: 3.8/4.0, Honors, relevant coursework..." oninput="updatePreview()"></textarea>
+                    </div>
+                </div>
+            `;
+            container.appendChild(eduDiv);
+            updatePreview();
+        }
+
+        function addLanguage() {
+            languageCount++;
+            const container = document.getElementById('languages-container');
+            const langDiv = document.createElement('div');
+            langDiv.className = 'grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200';
+            langDiv.innerHTML = `
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Language</label>
+                    <input type="text" class="lang-name input-field w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="e.g., Spanish" oninput="updatePreview()">
+                </div>
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Proficiency</label>
+                        <select class="lang-level input-field w-full px-4 py-3 border border-gray-300 rounded-lg" onchange="updatePreview()">
+                            <option value="">Select level</option>
+                            <option value="Native">Native</option>
+                            <option value="Fluent">Fluent (C2)</option>
+                            <option value="Advanced">Advanced (C1)</option>
+                            <option value="Upper Intermediate">Upper Intermediate (B2)</option>
+                            <option value="Intermediate">Intermediate (B1)</option>
+                            <option value="Elementary">Elementary (A2)</option>
+                            <option value="Beginner">Beginner (A1)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove(); updatePreview()" class="px-3 py-3 text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(langDiv);
+            updatePreview();
+        }
+
+        function toggleReferencesInput() {
+            const input = document.getElementById('references-input');
+            const selected = document.querySelector('input[name="references"]:checked').value;
+            if (selected === 'provide') {
+                input.classList.remove('hidden');
+            } else {
+                input.classList.add('hidden');
+            }
+            updatePreview();
+        }
+
+        function formatDate(dateStr, format) {
+            if (!dateStr) return '';
+            const [year, month] = dateStr.split('-');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            if (format === 'MM/DD/YYYY') {
+                return `${month}/${year}`;
+            } else if (format === 'DD/MM/YYYY' || format === 'DD-MM-YYYY') {
+                return `${monthNames[parseInt(month)-1]} ${year}`;
+            } else if (format === 'DD.MM.YYYY') {
+                return `${monthNames[parseInt(month)-1]} ${year}`;
+            } else if (format === 'YYYY-MM-DD' || format === 'YYYY/MM/DD') {
+                return `${year}/${month}`;
+            }
+            return `${monthNames[parseInt(month)-1]} ${year}`;
+        }
+
+        function updatePreview() {
+            const countryCode = document.getElementById('country').value;
+            if (!countryCode) return;
+            
+            const rules = countryRules[countryCode];
+            const preview = document.getElementById('cv-preview-content');
+            
+            // Gather data
+            const data = {
+                firstName: document.getElementById('firstName')?.value || '',
+                lastName: document.getElementById('lastName')?.value || '',
+                title: document.getElementById('title')?.value || '',
+                email: document.getElementById('email')?.value || '',
+                phone: document.getElementById('phone')?.value || '',
+                location: document.getElementById('location')?.value || '',
+                linkedin: document.getElementById('linkedin')?.value || '',
+                dateOfBirth: document.getElementById('dateOfBirth')?.value || '',
+                nationality: document.getElementById('nationality')?.value || '',
+                maritalStatus: document.getElementById('maritalStatus')?.value || '',
+                summary: document.getElementById('summary')?.value || '',
+                skills: document.getElementById('skills')?.value || '',
+                certifications: document.getElementById('certifications')?.value || '',
+                hobbies: document.getElementById('hobbies')?.value || ''
+            };
+            
+            // Gather experiences
+            const experiences = [];
+            document.querySelectorAll('#experience-container > div').forEach(exp => {
+                const title = exp.querySelector('.exp-title')?.value || '';
+                const company = exp.querySelector('.exp-company')?.value || '';
+                const start = exp.querySelector('.exp-start')?.value || '';
+                const end = exp.querySelector('.exp-end')?.value || '';
+                const current = exp.querySelector('.exp-current')?.checked || false;
+                const description = exp.querySelector('.exp-description')?.value || '';
+                if (title || company) {
+                    experiences.push({ title, company, start, end, current, description });
+                }
+            });
+            
+            // Gather education
+            const education = [];
+            document.querySelectorAll('#education-container > div').forEach(edu => {
+                const degree = edu.querySelector('.edu-degree')?.value || '';
+                const institution = edu.querySelector('.edu-institution')?.value || '';
+                const start = edu.querySelector('.edu-start')?.value || '';
+                const end = edu.querySelector('.edu-end')?.value || '';
+                const details = edu.querySelector('.edu-details')?.value || '';
+                if (degree || institution) {
+                    education.push({ degree, institution, start, end, details });
+                }
+            });
+            
+            // Gather languages
+            const languages = [];
+            document.querySelectorAll('#languages-container > div').forEach(lang => {
+                const name = lang.querySelector('.lang-name')?.value || '';
+                const level = lang.querySelector('.lang-level')?.value || '';
+                if (name && level) {
+                    languages.push({ name, level });
+                }
+            });
+            
+            // References
+            const referencesOption = document.querySelector('input[name="references"]:checked')?.value || 'upon-request';
+            const referencesText = document.getElementById('referencesText')?.value || '';
+            
+            // Build CV HTML
+            let html = '<div style="max-width: 210mm; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; font-size: 11px; line-height: 1.5;">';
+            
+            // Header with photo placeholder if needed
+            html += '<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">';
+            html += '<div style="flex: 1;">';
+            html += `<h1 style="font-size: 24px; font-weight: bold; margin: 0 0 4px 0; color: #1f2937;">${data.firstName} ${data.lastName}</h1>`;
+            html += `<h2 style="font-size: 14px; color: #6b7280; margin: 0 0 12px 0;">${data.title}</h2>`;
+            html += '<div style="font-size: 10px; color: #4b5563;">';
+            if (data.email) html += `<div>✉ ${data.email}</div>`;
+            if (data.phone) html += `<div>📞 ${data.phone}</div>`;
+            if (data.location) html += `<div>📍 ${data.location}</div>`;
+            if (data.linkedin) html += `<div>🔗 LinkedIn</div>`;
+            if (rules.dateOfBirth && data.dateOfBirth) html += `<div>📅 Born: ${new Date(data.dateOfBirth).toLocaleDateString()}</div>`;
+            if (rules.nationality && data.nationality) html += `<div>🌍 Nationality: ${data.nationality}</div>`;
+            if (rules.maritalStatus && data.maritalStatus) html += `<div>💑 ${data.maritalStatus}</div>`;
+            html += '</div></div>';
+            
+            // Photo placeholder
+            if (rules.photo) {
+                html += '<div class="photo-placeholder">Add your professional photo here<br>(passport style)</div>';
+            }
+            html += '</div>';
+            
+            // Professional Summary
+            if (data.summary) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">PROFESSIONAL SUMMARY</h3>';
+                html += `<p style="margin: 0; text-align: justify;">${data.summary}</p>`;
+                html += '</div>';
+            }
+            
+            // Render sections based on country order
+            const sections = [];
+            rules.sectionOrder.forEach(section => {
+                if (section === 'experience') {
+                    sections.push(renderExperience(experiences, rules));
+                } else if (section === 'education') {
+                    sections.push(renderEducation(education, rules));
+                }
+            });
+            html += sections.join('');
+            
+            // Skills
+            if (data.skills) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">SKILLS</h3>';
+                const skillsList = data.skills.split(',').map(s => s.trim()).filter(s => s);
+                html += '<div>' + skillsList.join(' • ') + '</div>';
+                html += '</div>';
+            }
+            
+            // Languages
+            if (languages.length > 0) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">LANGUAGES</h3>';
+                languages.forEach(lang => {
+                    html += `<div style="margin-bottom: 4px;"><strong>${lang.name}:</strong> ${lang.level}</div>`;
+                });
+                html += '</div>';
+            }
+            
+            // Certifications
+            if (data.certifications) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">CERTIFICATIONS</h3>';
+                const certs = data.certifications.split('\n').filter(c => c.trim());
+                certs.forEach(cert => {
+                    html += `<div style="margin-bottom: 4px;">• ${cert}</div>`;
+                });
+                html += '</div>';
+            }
+            
+            // Hobbies (if applicable)
+            if (rules.hobbies && data.hobbies) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">HOBBIES & INTERESTS</h3>';
+                html += `<p style="margin: 0;">${data.hobbies}</p>`;
+                html += '</div>';
+            }
+            
+            // References
+            if (referencesOption === 'upon-request') {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">REFERENCES</h3>';
+                html += '<p style="margin: 0; font-style: italic;">References available upon request</p>';
+                html += '</div>';
+            } else if (referencesOption === 'provide' && referencesText) {
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">REFERENCES</h3>';
+                html += `<div style="white-space: pre-line;">${referencesText}</div>`;
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            preview.innerHTML = html;
+        }
+
+        function renderExperience(experiences, rules) {
+            if (experiences.length === 0) return '';
+            
+            let html = '<div style="margin-bottom: 20px;">';
+            html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">WORK EXPERIENCE</h3>';
+            
+            experiences.forEach(exp => {
+                html += '<div style="margin-bottom: 12px;">';
+                html += `<div style="display: flex; justify-content: space-between; align-items: baseline;">`;
+                html += `<strong style="font-size: 12px;">${exp.title}</strong>`;
+                const endDate = exp.current ? 'Present' : formatDate(exp.end, rules.dateFormat);
+                html += `<span style="font-size: 10px; color: #6b7280;">${formatDate(exp.start, rules.dateFormat)} - ${endDate}</span>`;
+                html += `</div>`;
+                html += `<div style="font-style: italic; color: #4b5563; margin-bottom: 4px;">${exp.company}</div>`;
+                if (exp.description) {
+                    const bullets = exp.description.split('\n').filter(b => b.trim());
+                    bullets.forEach(bullet => {
+                        html += `<div style="margin-left: 12px; margin-bottom: 2px;">• ${bullet}</div>`;
+                    });
+                }
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function renderEducation(education, rules) {
+            if (education.length === 0) return '';
+            
+            let html = '<div style="margin-bottom: 20px;">';
+            html += '<h3 style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 4px; margin-bottom: 8px;">EDUCATION</h3>';
+            
+            education.forEach(edu => {
+                html += '<div style="margin-bottom: 12px;">';
+                html += `<div style="display: flex; justify-content: space-between; align-items: baseline;">`;
+                html += `<strong style="font-size: 12px;">${edu.degree}</strong>`;
+                html += `<span style="font-size: 10px; color: #6b7280;">${edu.start} - ${edu.end}</span>`;
+                html += `</div>`;
+                html += `<div style="font-style: italic; color: #4b5563;">${edu.institution}</div>`;
+                if (edu.details) {
+                    html += `<div style="margin-top: 4px; font-size: 10px;">${edu.details}</div>`;
+                }
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function downloadCV() {
+            const element = document.getElementById('cv-preview-content');
+            const opt = {
+                margin: 10,
+                filename: 'CV_GlobalCV.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Initialize
+        window.onload = function() {
+            // Add first items by default when steps are reached
+        };
+    </script>
+</body>
+</html>
