@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/globalcv-site.html"
+    },
+    {
+      "source": "/builder",
+      "destination": "/cv-builder.html"
+    }
+  ]
+}
